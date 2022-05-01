@@ -1,0 +1,53 @@
+package de.lama.balls.surface.ball;
+
+import de.lama.balls.math.Vec2f;
+import de.lama.balls.math.Vector2f;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class RangedBallFactory implements BallFactory {
+
+    private static final float SPEED = 0.005f;
+
+    private final Random random;
+    private final float maxX;
+    private final float maxY;
+    private final float radius = 0.01f;
+    private final List<Ball> spawned;
+
+    public RangedBallFactory(float maxX, float maxY) {
+        this.random = new Random();
+        this.maxX = maxX;
+        this.maxY = maxY;
+        this.spawned = new ArrayList<>();
+    }
+
+    private float minmax(float max, float t) {
+        return Math.max(Math.min(max - this.radius, t), this.radius);
+    }
+
+    private Vec2f randomLocation() {
+        float x = this.minmax(this.maxX, this.random.nextFloat() * this.maxX);
+        float y = this.minmax(this.maxY, this.random.nextFloat() * this.maxY);
+        return new Vector2f(x, y);
+    }
+
+    private Vec2f randomVelocity() {
+        float x = this.random.nextFloat() * 2 - 1;
+        float y = this.random.nextFloat() * 2 - 1;
+        Vec2f normalizedVector = new Vector2f(x, y).normalize();
+        return normalizedVector.scale(new Vector2f(SPEED, SPEED));
+    }
+
+    @Override
+    public Ball create() {
+        Vec2f velocity = this.randomVelocity();
+        Vec2f location = this.randomLocation();
+        Ball spawn = new BouncingBall(location, velocity, this.radius);
+        if (this.spawned.stream().anyMatch(spawned -> spawned.intersects(spawn))) return this.create();
+        this.spawned.add(spawn);
+        return spawn;
+    }
+}
