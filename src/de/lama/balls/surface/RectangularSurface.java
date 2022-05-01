@@ -22,7 +22,7 @@ public class RectangularSurface implements Surface {
     public RectangularSurface() {
         this.balls = new CopyOnWriteArrayList<>();
         this.connections = new CopyOnWriteArrayList<>();
-        BallFactory ballFactory = new RangedBallFactory(1,1);
+        BallFactory ballFactory = new RangedBallFactory(1, 1);
         IntStream.range(0, MAX_BALLS).mapToObj(i -> ballFactory.create()).forEach(this.balls::add);
     }
 
@@ -55,7 +55,7 @@ public class RectangularSurface implements Surface {
 
                 float distance = ball1.getLocation().distance(ball2.getLocation());
                 if (distance <= CONNECTION_DISTANCE) {
-                    this.connections.add(new BallConnection(ball1, ball2,  1f - distance / CONNECTION_DISTANCE));
+                    this.connections.add(new BallConnection(ball1, ball2, 1f - distance / CONNECTION_DISTANCE));
                 }
             }
         }
@@ -75,7 +75,7 @@ public class RectangularSurface implements Surface {
     }
 
     private void checkNeighbours(Ball ball) {
-        for (Ball neighbour: this.balls) {
+        for (Ball neighbour : this.balls) {
 //             if (neighbour == ball)
 //
 //            if ()

@@ -55,6 +55,4 @@ public final class Vector2f implements Vec2f {
         sb.append('}');
         return sb.toString();
     }
-
-
 }
