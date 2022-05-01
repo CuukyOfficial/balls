@@ -25,8 +25,8 @@ public record Vector2f(float x, float y) implements Vec2f {
 
     @Override
     public Vec2f normalize() {
-        float norm = (float) Math.sqrt(x * x + y * y);
-        return new Vector2f(x / norm, y / norm);
+        float norm = (float) Math.sqrt(this.x * this.x + this.y * this.y);
+        return new Vector2f(this.x / norm, this.y / norm);
     }
 
     @Override
@@ -41,6 +41,6 @@ public record Vector2f(float x, float y) implements Vec2f {
 
     @Override
     public String toString() {
-        return "Vector2f{" + "x=" + x + ", y=" + y + '}';
+        return "Vector2f{" + "x=" + this.x + ", y=" + this.y + '}';
     }
 }

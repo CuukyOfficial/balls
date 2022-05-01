@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 
 public class RectangularSurface implements Surface {
 
-    private final int MAX_BALLS = 1000;
+    private final int MAX_BALLS = 10;
     private final float CONNECTION_DISTANCE = 1f;
 
     private final List<Ball> balls;

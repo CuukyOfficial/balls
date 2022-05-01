@@ -51,8 +51,10 @@ public class RenderedLabel extends JLabel {
             Vec2f loc = ball.getLocation();
             int x = this.transformX(loc.getX() - ball.getRadius());
             int y = this.transformY(loc.getY() - ball.getRadius());
-            g2d.fillOval(x, y,
-                this.transformX(ball.getRadius() * 2), this.transformY(ball.getRadius() * 2));
+            int width = this.transformX(ball.getRadius() * 2);
+            int height = this.transformY(ball.getRadius() * 2);
+            g2d.fillOval(x, y, width, height);
+            g2d.drawOval(x, y, width, height);
         }
 
         this.repaint();
