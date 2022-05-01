@@ -6,6 +6,7 @@ import de.lama.balls.ui.RenderedWindow;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class Main {
 
@@ -13,7 +14,7 @@ public class Main {
         Surface surface = new RectangularSurface();
         RenderedWindow window = new RenderedWindow("Deez Nuts", surface);
 
-        ExecutorService pool = Executors.newCachedThreadPool();
+        ScheduledExecutorService pool = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
         surface.start(pool);
         pool.execute(() -> window.setVisible(true));
     }

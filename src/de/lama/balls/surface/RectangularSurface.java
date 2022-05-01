@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class RectangularSurface implements Surface {
@@ -24,21 +26,6 @@ public class RectangularSurface implements Surface {
         this.connections = new CopyOnWriteArrayList<>();
         BallFactory ballFactory = new RangedBallFactory(1, 1);
         IntStream.range(0, MAX_BALLS).mapToObj(i -> ballFactory.create()).forEach(this.balls::add);
-    }
-
-    private void sleep(long timeout) {
-        try {
-            Thread.sleep(timeout);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void start(Runnable runnable, long timeout) {
-        while (true) {
-            runnable.run();
-            this.sleep(timeout);
-        }
     }
 
     private void move() {
@@ -64,9 +51,9 @@ public class RectangularSurface implements Surface {
     }
 
     @Override
-    public void start(ExecutorService pool) {
-        pool.execute(() -> this.start(this::move, 15));
-        pool.execute(() -> this.start(this::connect, 100));
+    public void start(ScheduledExecutorService pool) {
+        pool.scheduleAtFixedRate(this::move, 0, 15, TimeUnit.MILLISECONDS);
+        pool.scheduleAtFixedRate(this::connect, 0, 100, TimeUnit.MILLISECONDS);
     }
 
     private void checkBoundaries(Ball ball) {
