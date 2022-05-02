@@ -4,16 +4,10 @@ import java.awt.geom.Ellipse2D;
 
 public record Oval2f(Vec2f location, Vec2f velocity, float width, float height) {
 
-    public static Vec2f LAST_CENTER = new Vec2f(0,0);
-
     private Vec2f getMiddle(Vec2f other) {
         float xMiddle = this.location.x() + 0.5f * (other.x() - this.location().x());
         float yMiddle = this.location.y() + 0.5f * (other.y() - this.location().y());
         return new Vec2f(xMiddle, yMiddle);
-    }
-
-    private boolean intersects(float middle, float cord, float dimension) {
-        return Math.abs(middle - cord) <= dimension;
     }
 
     private Oval2f next() {

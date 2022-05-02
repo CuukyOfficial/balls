@@ -18,14 +18,13 @@ import java.util.stream.IntStream;
 
 public class RectangularSurface implements Surface {
 
-    private static final int MAX_BALLS = 20;
+    private static final int MAX_BALLS = 1;
     private static final float CONNECTION_DISTANCE = 1f;
     private static final float BALL_SPEED = 0.005f;
-    private static final float BALL_RADIUS = 0.05f;
+    private static final float BALL_RADIUS = 0.2f;
 
     private final List<Ball> balls;
     private final List<Connection> connections;
-    private boolean stopped;
 
     public RectangularSurface() {
         this.balls = new CopyOnWriteArrayList<>();
@@ -33,15 +32,12 @@ public class RectangularSurface implements Surface {
     }
 
     private void move() {
-        if (this.stopped) return;
         this.checkBallCollision();
-        if (this.stopped) return;
         this.balls.forEach(this::checkBoundaries);
         this.balls.forEach(Ball::move);
     }
 
     private void connect() {
-        if (this.stopped) return;
         List<Connection> connections = new ArrayList<>(this.connections);
         for (Ball ball1 : this.balls) {
             for (Ball ball2 : this.balls) {
