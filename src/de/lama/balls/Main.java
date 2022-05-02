@@ -13,10 +13,13 @@ public class Main {
     public static void main(String[] args) {
         Surface surface = new RectangularSurface();
         System.setProperty("sun.java2d.opengl", "True");
-        RenderedWindow window = new RenderedWindow("Deez Nuts", surface);
+        RenderedWindow window = new RenderedWindow("Deez Nuts");
 
         ScheduledExecutorService pool = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
-        surface.start(pool);
-        pool.execute(() -> window.setVisible(true));
+        surface.start(window, pool);
+        pool.execute(() -> {
+            window.start(surface);
+            window.setVisible(true);
+        });
     }
 }

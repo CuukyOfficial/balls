@@ -8,17 +8,12 @@ import de.lama.balls.surface.ball.Ball;
 import javax.swing.*;
 import java.awt.*;
 
-public class RenderedLabel extends JLabel {
+public class RenderedLabel extends JLabel implements AspectRatioProvider {
 
     private final Color BACKGROUND = Color.BLACK;
     private final Color CIRCLE_COLOR = Color.RED;
 
-    private final Surface surface;
-
-    public RenderedLabel(Surface surface) {
-        this.surface = surface;
-        this.repaint();
-    }
+    private Surface surface;
 
     private int transformX(float x) {
         return (int) (this.getWidth() * x);
@@ -26,6 +21,11 @@ public class RenderedLabel extends JLabel {
 
     private int transformY(float y) {
         return (int) (this.getHeight() * y);
+    }
+
+    public void start(Surface surface) {
+        this.surface = surface;
+        this.repaint();
     }
 
     @Override
@@ -39,24 +39,30 @@ public class RenderedLabel extends JLabel {
         float b = CIRCLE_COLOR.getBlue() / 255f;
         for (Connection connection : this.surface.getConnections()) {
             g2d.setColor(new Color(r, gr, b, connection.getDensity()));
-            int x1 = this.transformX(connection.getPoint1().getX());
-            int x2 = this.transformX(connection.getPoint2().getX());
-            int y1 = this.transformY(connection.getPoint1().getY());
-            int y2 = this.transformY(connection.getPoint2().getY());
+            int x1 = this.transformX(connection.getPoint1().x());
+            int x2 = this.transformX(connection.getPoint2().x());
+            int y1 = this.transformY(connection.getPoint1().y());
+            int y2 = this.transformY(connection.getPoint2().y());
             g2d.drawLine(x1, y1, x2, y2);
         }
 
         g2d.setColor(CIRCLE_COLOR);
         for (Ball ball : this.surface.getBalls()) {
             Vec2f loc = ball.getLocation();
-            int x = this.transformX(loc.getX() - ball.getRadius());
-            int y = this.transformY(loc.getY() - ball.getRadius());
-            int width = this.transformX(ball.getRadius() * 2);
-            int height = this.transformY(ball.getRadius() * 2);
+            int x = this.transformX(loc.x() - ball.getWidth());
+            int y = this.transformY(loc.y() - ball.getHeight());
+            int width = this.transformX(ball.getWidth() * 2);
+            int height = this.transformY(ball.getHeight() * 2);
             g2d.fillOval(x, y, width, height);
             g2d.drawOval(x, y, width, height);
         }
 
         this.repaint();
+    }
+
+    @Override
+    public float getAspectRatio() {
+        if (this.getWidth() == 0 || this.getHeight() == 0) return 1f;
+        return (float) this.getWidth() / (float) this.getHeight();
     }
 }

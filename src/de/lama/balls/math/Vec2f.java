@@ -1,17 +1,31 @@
 package de.lama.balls.math;
 
-public interface Vec2f {
+import java.util.function.BiFunction;
 
-    Vec2f scale(Vec2f scale);
+public record Vec2f(float x, float y) {
 
-    Vec2f add(Vec2f add);
+    private Vec2f modify(Vec2f mod, BiFunction<Float, Float, Float> modifier) {
+        return new Vec2f(modifier.apply(this.x, mod.x), modifier.apply(this.y, mod.y));
+    }
 
-    Vec2f normalize();
+    public Vec2f scale(Vec2f scale) {
+        return this.modify(scale, (x1, x2) -> x1 * x2);
+    }
 
-    float distance(Vec2f other);
+    public Vec2f add(Vec2f add) {
+        return this.modify(add, Float::sum);
+    }
 
-    float getX();
+    public float distance(Vec2f other) {
+        return (float) Math.sqrt(Math.pow((this.x - other.x), 2) + Math.pow((this.y - other.y), 2));
+    }
 
-    float getY();
+    public Vec2f normalize() {
+        float norm = (float) Math.sqrt(this.x * this.x + this.y * this.y);
+        return new Vec2f(this.x / norm, this.y / norm);
+    }
 
+    public String toString() {
+        return "Vector2f{" + "x=" + this.x + ", y=" + this.y + '}';
+    }
 }

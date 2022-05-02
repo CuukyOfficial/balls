@@ -1,5 +1,6 @@
 package de.lama.balls.surface.ball;
 
+import de.lama.balls.math.Oval2f;
 import de.lama.balls.math.Vec2f;
 
 public interface Ball {
@@ -12,6 +13,10 @@ public interface Ball {
 
     boolean intersects(Ball ball);
 
-    float getRadius();
+    float getWidth();
+
+    float getHeight();
+
+    Oval2f toOval();
 
 }

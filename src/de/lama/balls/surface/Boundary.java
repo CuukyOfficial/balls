@@ -1,17 +1,18 @@
 package de.lama.balls.surface;
 
 import de.lama.balls.math.Vec2f;
-import de.lama.balls.math.Vector2f;
 import de.lama.balls.surface.ball.Ball;
+import de.lama.balls.ui.AspectRatioProvider;
 
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 public enum Boundary {
 
-    LEFT((b) -> b.getLocation().getX() - b.getRadius() < 0, new Vector2f(-1, 1)),
-    RIGHT((b) -> b.getLocation().getX() + b.getRadius() > 1, new Vector2f(-1, 1)),
-    UPPER((b) -> b.getLocation().getY() + b.getRadius() > 1, new Vector2f(1, -1)),
-    LOWER((b) -> b.getLocation().getY() - b.getRadius() < 0, new Vector2f(1, -1));
+    LEFT((b) -> b.getLocation().x() - b.getWidth() < 0, new Vec2f(-1, 1)),
+    RIGHT((b) -> b.getLocation().x() + b.getWidth() > 1, new Vec2f(-1, 1)),
+    UPPER((b) -> b.getLocation().y() + b.getHeight() > 1, new Vec2f(1, -1)),
+    LOWER((b) -> b.getLocation().y() - b.getHeight() < 0, new Vec2f(1, -1));
 
     private final Predicate<Ball> exceeds;
     private final Vec2f scaleOnExceed;
