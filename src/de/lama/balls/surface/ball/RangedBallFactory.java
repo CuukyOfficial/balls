@@ -9,19 +9,20 @@ import java.util.Random;
 
 public class RangedBallFactory implements BallFactory {
 
-    private static final float SPEED = 0.005f;
-
     private final Random random;
     private final float maxX;
     private final float maxY;
-    private final float radius = 0.01f;
+    private final float speed;
+    private final float radius;
     private final List<Ball> spawned;
     private final AspectRatioProvider aspectRatioProvider;
 
-    public RangedBallFactory(float maxX, float maxY, AspectRatioProvider aspectRatioProvider) {
+    public RangedBallFactory(float maxX, float maxY, float speed, float radius, AspectRatioProvider aspectRatioProvider) {
         this.random = new Random();
         this.maxX = maxX;
         this.maxY = maxY;
+        this.speed = speed;
+        this.radius = radius;
         this.spawned = new ArrayList<>();
         this.aspectRatioProvider = aspectRatioProvider;
     }
@@ -40,7 +41,7 @@ public class RangedBallFactory implements BallFactory {
         float x = this.random.nextFloat() * 2 - 1;
         float y = this.random.nextFloat() * 2 - 1;
         Vec2f normalizedVector = new Vec2f(x, y).normalize();
-        return normalizedVector.scale(new Vec2f(SPEED, SPEED));
+        return normalizedVector.scale(new Vec2f(this.speed, this.speed));
     }
 
     @Override

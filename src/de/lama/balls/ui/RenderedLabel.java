@@ -1,5 +1,6 @@
 package de.lama.balls.ui;
 
+import de.lama.balls.math.Oval2f;
 import de.lama.balls.math.Vec2f;
 import de.lama.balls.surface.Connection;
 import de.lama.balls.surface.Surface;
@@ -10,8 +11,9 @@ import java.awt.*;
 
 public class RenderedLabel extends JLabel implements AspectRatioProvider {
 
-    private final Color BACKGROUND = Color.BLACK;
-    private final Color CIRCLE_COLOR = Color.RED;
+    private static final RenderQuality RENDER_QUALITY = RenderQuality.HIGH;
+    private static final Color BACKGROUND = Color.BLACK;
+    private static final Color CIRCLE_COLOR = Color.RED;
 
     private Surface surface;
 
@@ -31,6 +33,7 @@ public class RenderedLabel extends JLabel implements AspectRatioProvider {
     @Override
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHints(RENDER_QUALITY.getHints());
         g2d.setColor(BACKGROUND);
         g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 
@@ -56,6 +59,9 @@ public class RenderedLabel extends JLabel implements AspectRatioProvider {
             g2d.fillOval(x, y, width, height);
             g2d.drawOval(x, y, width, height);
         }
+
+        g2d.setColor(Color.WHITE);
+        g2d.drawOval(this.transformX(Oval2f.LAST_CENTER.x()) - 2, this.transformY(Oval2f.LAST_CENTER.y()) - 2, 4,4);
 
         this.repaint();
     }

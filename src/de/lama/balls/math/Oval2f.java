@@ -4,6 +4,8 @@ import java.awt.geom.Ellipse2D;
 
 public record Oval2f(Vec2f location, float width, float height) {
 
+    public static Vec2f LAST_CENTER = new Vec2f(0,0);
+
     private Vec2f getMiddle(Vec2f other) {
         float xMiddle = this.location.x() + 0.5f * (other.x() - this.location().x());
         float yMiddle = this.location.y() + 0.5f * (other.y() - this.location().y());
@@ -16,6 +18,7 @@ public record Oval2f(Vec2f location, float width, float height) {
 
     public boolean intersects(Oval2f oval) {
         Vec2f middle = this.getMiddle(oval.location);
+        LAST_CENTER = middle;
 
         //= this.intersects(middle.x(), this.location.x(), this.width) &&
             //this.intersects(middle.y(), this.location.y(), this.height);

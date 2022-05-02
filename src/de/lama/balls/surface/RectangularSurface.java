@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -18,6 +19,8 @@ public class RectangularSurface implements Surface {
 
     private static final int MAX_BALLS = 10;
     private static final float CONNECTION_DISTANCE = 1f;
+    private static final float BALL_SPEED = 0.005f;
+    private static final float BALL_RADIUS = 0.05f;
 
     private final List<Ball> balls;
     private final List<Connection> connections;
@@ -63,7 +66,7 @@ public class RectangularSurface implements Surface {
             if (neighbour.equals(ball)) continue;
 
             if (ball.intersects(neighbour)) {
-                this.stopped = true;
+//                this.stopped = true;
                 break;
             }
         }
@@ -71,7 +74,7 @@ public class RectangularSurface implements Surface {
 
     @Override
     public void start(AspectRatioProvider aspectRatioProvider, ScheduledExecutorService pool) {
-        BallFactory ballFactory = new RangedBallFactory(1, 1, aspectRatioProvider);
+        BallFactory ballFactory = new RangedBallFactory(1, 1, BALL_SPEED, BALL_RADIUS, aspectRatioProvider);
         IntStream.range(0, MAX_BALLS).mapToObj(i -> ballFactory.create()).forEach(this.balls::add);
         pool.scheduleAtFixedRate(this::move, 0, 15, TimeUnit.MILLISECONDS);
         pool.scheduleAtFixedRate(this::connect, 0, 100, TimeUnit.MILLISECONDS);
