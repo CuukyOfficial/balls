@@ -2,7 +2,7 @@ package de.lama.balls.math;
 
 import java.awt.geom.Ellipse2D;
 
-public record Oval2f(Vec2f location, float width, float height) {
+public record Oval2f(Vec2f location, Vec2f velocity, float width, float height) {
 
     public static Vec2f LAST_CENTER = new Vec2f(0,0);
 
@@ -16,25 +16,28 @@ public record Oval2f(Vec2f location, float width, float height) {
         return Math.abs(middle - cord) <= dimension;
     }
 
-    public boolean intersects(Oval2f oval) {
-        Vec2f middle = this.getMiddle(oval.location);
-        LAST_CENTER = middle;
-
-        //= this.intersects(middle.x(), this.location.x(), this.width) &&
-            //this.intersects(middle.y(), this.location.y(), this.height);
-//        if (intersects) {
-//            //System.out.println("x1: " + this.location.x());
-//            System.out.println("first vector: " + this.location);
-//            System.out.println("second vector: " + oval.location);
-//            System.out.println("intersects on width: " + this.intersects(middle.x(), this.location.x(), this.width));
-//            System.out.println("width: " + this.width);
-//            System.out.println("distance from center to middle: " + (middle.x() - this.location.x()));
-//            System.out.println(middle);
-//        }
-        return this.toEllipse().contains(middle.x(), middle.y());
+    private Oval2f next() {
+        return new Oval2f(this.location.add(this.velocity), this.velocity, this.width, this.height);
     }
 
-    public Ellipse2D toEllipse() {
-        return new Ellipse2D.Float(this.location.x(), this.location.y(), this.width, this.height);
+    public boolean intersects(Oval2f oval) {
+//        float a = this.width;
+//        float b = this.height;
+//        float p = oval.location.x();
+//        float q = oval.location.y();
+//        System.out.println(Math.pow(p / a, 2) + Math.pow(q / b, 2));
+//        return Math.pow(p / a, 2) + Math.pow(q / b, 2) <= 4;
+        Oval2f next = this.next();
+        return next.asEllipse().contains(next.getMiddle(oval.next().location).asPoint());
+    }
+
+    public Vec2f bounce(Oval2f oval, float speed) {
+        Vec2f n = this.location.sub(oval.location).normalize();
+        return this.velocity.sub(n.scale(n.dotProduct(this.velocity.sub(oval.velocity))));
+    }
+
+    public Ellipse2D asEllipse() {
+        return new Ellipse2D.Float(this.location.x() - this.width,
+            this.location.y() - this.height, this.width * 2, this.height * 2);
     }
 }

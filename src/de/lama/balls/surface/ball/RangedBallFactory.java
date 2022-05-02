@@ -41,7 +41,7 @@ public class RangedBallFactory implements BallFactory {
         float x = this.random.nextFloat() * 2 - 1;
         float y = this.random.nextFloat() * 2 - 1;
         Vec2f normalizedVector = new Vec2f(x, y).normalize();
-        return normalizedVector.scale(new Vec2f(this.speed, this.speed));
+        return normalizedVector.scale(this.speed);
     }
 
     @Override

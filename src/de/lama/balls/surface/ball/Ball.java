@@ -5,18 +5,22 @@ import de.lama.balls.math.Vec2f;
 
 public interface Ball {
 
-    void bounce(Vec2f bounce);
+    void bounce(Vec2f off);
 
     void move();
 
-    Vec2f getLocation();
-
     boolean intersects(Ball ball);
+
+    void setVelocity(Vec2f velocity);
+
+    Vec2f getVelocity();
+
+    Vec2f getLocation();
 
     float getWidth();
 
     float getHeight();
 
-    Oval2f toOval();
+    Oval2f asOval();
 
 }

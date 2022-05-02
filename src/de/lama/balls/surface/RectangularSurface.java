@@ -1,5 +1,6 @@
 package de.lama.balls.surface;
 
+import de.lama.balls.math.Vec2f;
 import de.lama.balls.surface.ball.Ball;
 import de.lama.balls.surface.ball.BallFactory;
 import de.lama.balls.surface.ball.RangedBallFactory;
@@ -7,17 +8,17 @@ import de.lama.balls.ui.AspectRatioProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public class RectangularSurface implements Surface {
 
-    private static final int MAX_BALLS = 10;
+    private static final int MAX_BALLS = 20;
     private static final float CONNECTION_DISTANCE = 1f;
     private static final float BALL_SPEED = 0.005f;
     private static final float BALL_RADIUS = 0.05f;
@@ -33,7 +34,7 @@ public class RectangularSurface implements Surface {
 
     private void move() {
         if (this.stopped) return;
-        this.balls.forEach(this::checkNeighbours);
+        this.checkBallCollision();
         if (this.stopped) return;
         this.balls.forEach(this::checkBoundaries);
         this.balls.forEach(Ball::move);
@@ -61,15 +62,25 @@ public class RectangularSurface implements Surface {
             .forEach(b -> ball.bounce(b.getScaleOnExceed()));
     }
 
-    private void checkNeighbours(Ball ball) {
-        for (Ball neighbour : this.balls) {
-            if (neighbour.equals(ball)) continue;
-
-            if (ball.intersects(neighbour)) {
-//                this.stopped = true;
-                break;
+    private void checkBallCollision() {
+        // TODO: optimize
+        Map<Ball, Vec2f> velocitiesOfCollisions = new HashMap<>();
+        for (Ball ball1 : this.balls) {
+            Vec2f bounce = null;
+            for (Ball ball2 : this.balls) {
+                if (!ball1.equals(ball2) && ball1.intersects(ball2)) {
+                    Vec2f v1 = ball1.asOval().bounce(ball2.asOval(), BALL_SPEED);
+                    bounce = bounce != null ? bounce.add(v1) : v1;
+                }
             }
+            if (bounce != null) velocitiesOfCollisions.put(ball1, bounce);
         }
+
+        this.balls.stream().filter(b -> !velocitiesOfCollisions.containsKey(b))
+            .forEach(b -> velocitiesOfCollisions.put(b, b.getVelocity()));
+        float max = MAX_BALLS * BALL_SPEED;
+        float allSpeeds = velocitiesOfCollisions.values().stream().map(Vec2f::norm).reduce(Float::sum).orElse(max);
+        velocitiesOfCollisions.keySet().forEach(b -> b.setVelocity(velocitiesOfCollisions.get(b).scale(max / allSpeeds)));
     }
 
     @Override

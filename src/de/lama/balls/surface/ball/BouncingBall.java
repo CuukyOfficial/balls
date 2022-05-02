@@ -39,8 +39,18 @@ public class BouncingBall implements Ball {
     }
 
     @Override
+    public void setVelocity(Vec2f velocity) {
+        this.velocity = velocity;
+    }
+
+    @Override
+    public Vec2f getVelocity() {
+        return this.velocity;
+    }
+
+    @Override
     public boolean intersects(Ball ball) {
-        return this.toOval().intersects(ball.toOval());
+        return this.asOval().intersects(ball.asOval());
     }
 
     @Override
@@ -49,7 +59,7 @@ public class BouncingBall implements Ball {
     }
 
     @Override
-    public Oval2f toOval() {
-        return new Oval2f(this.location, this.getWidth(), this.getHeight());
+    public Oval2f asOval() {
+        return new Oval2f(this.location, this.velocity, this.getWidth(), this.getHeight());
     }
 }
