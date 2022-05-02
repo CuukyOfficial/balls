@@ -12,6 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         Surface surface = new RectangularSurface();
+        System.setProperty("sun.java2d.opengl", "True");
         RenderedWindow window = new RenderedWindow("Deez Nuts", surface);
 
         ScheduledExecutorService pool = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
