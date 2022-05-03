@@ -1,6 +1,6 @@
 package de.lama.balls.ui;
 
-import de.lama.balls.ConfigurationProvider;
+import de.lama.balls.Configuration;
 import de.lama.balls.math.Vec2f;
 import de.lama.balls.surface.Connection;
 import de.lama.balls.surface.Surface;
@@ -11,11 +11,11 @@ import java.awt.*;
 
 public class RenderedLabel extends JLabel implements AspectRatioProvider {
 
-    private final ConfigurationProvider configurationProvider;
+    private final Configuration configuration;
     private Surface surface;
 
-    RenderedLabel(ConfigurationProvider configurationProvider) {
-        this.configurationProvider = configurationProvider;
+    RenderedLabel(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     private int transformX(float x) {
@@ -34,11 +34,11 @@ public class RenderedLabel extends JLabel implements AspectRatioProvider {
     @Override
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHints(this.configurationProvider.get().renderQuality().getHints());
-        g2d.setColor(this.configurationProvider.get().background());
+        g2d.setRenderingHints(this.configuration.getRenderQuality().getHints());
+        g2d.setColor(this.configuration.getBackground());
         g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        Color circleColor = this.configurationProvider.get().circleColor();
+        Color circleColor = this.configuration.getCircleColor();
         float r = circleColor.getRed() / 255f;
         float gr = circleColor.getGreen() / 255f;
         float b = circleColor.getBlue() / 255f;
@@ -51,7 +51,7 @@ public class RenderedLabel extends JLabel implements AspectRatioProvider {
             g2d.drawLine(x1, y1, x2, y2);
         }
 
-        g2d.setColor(this.configurationProvider.get().circleColor());
+        g2d.setColor(this.configuration.getCircleColor());
         for (Ball ball : this.surface.getBalls()) {
             Vec2f loc = ball.getLocation();
             int x = this.transformX(loc.x() - ball.getWidth());

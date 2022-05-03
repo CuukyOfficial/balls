@@ -1,6 +1,6 @@
 package de.lama.balls.surface;
 
-import de.lama.balls.ConfigurationProvider;
+import de.lama.balls.Configuration;
 import de.lama.balls.math.Vec2f;
 import de.lama.balls.surface.ball.Ball;
 import de.lama.balls.surface.ball.BallFactory;
@@ -21,12 +21,12 @@ public class RectangularSurface implements Surface {
 
     private final List<Ball> balls;
     private final List<Connection> connections;
-    private final ConfigurationProvider configurationProvider;
+    private final Configuration configuration;
 
-    public RectangularSurface(ConfigurationProvider configurationProvider) {
+    public RectangularSurface(Configuration configuration) {
         this.balls = new CopyOnWriteArrayList<>();
         this.connections = new CopyOnWriteArrayList<>();
-        this.configurationProvider = configurationProvider;
+        this.configuration = configuration;
     }
 
     private void move() {
@@ -37,7 +37,7 @@ public class RectangularSurface implements Surface {
 
     private void connect() {
         List<Connection> connections = new ArrayList<>(this.connections);
-        float minDistance = this.configurationProvider.get().connectionDistance();
+        float minDistance = this.configuration.getConnectionDistance();
         for (Ball ball1 : this.balls) {
             for (Ball ball2 : this.balls) {
                 if (ball1 == ball2) continue;
@@ -73,16 +73,16 @@ public class RectangularSurface implements Surface {
 
         this.balls.stream().filter(b -> !velocitiesOfCollisions.containsKey(b))
             .forEach(b -> velocitiesOfCollisions.put(b, b.getVelocity()));
-        float max = this.configurationProvider.get().ballAmount() * this.configurationProvider.get().ballSpeed();
+        float max = this.configuration.getBallAmount() * this.configuration.getBallSpeed();
         float allSpeeds = velocitiesOfCollisions.values().stream().map(Vec2f::norm).reduce(Float::sum).orElse(max);
         velocitiesOfCollisions.keySet().forEach(b -> b.setVelocity(velocitiesOfCollisions.get(b).scale(max / allSpeeds)));
     }
 
     @Override
     public void start(AspectRatioProvider aspectRatioProvider, ScheduledExecutorService pool) {
-        BallFactory ballFactory = new RangedBallFactory(1, 1, this.configurationProvider.get().ballSpeed(),
-            this.configurationProvider.get().ballRadius(), aspectRatioProvider);
-        IntStream.range(0, this.configurationProvider.get().ballAmount())
+        BallFactory ballFactory = new RangedBallFactory(1, 1, this.configuration.getBallSpeed(),
+            this.configuration.getBallRadius(), aspectRatioProvider);
+        IntStream.range(0, this.configuration.getBallAmount())
             .mapToObj(i -> ballFactory.create()).forEach(this.balls::add);
         pool.scheduleAtFixedRate(this::move, 0, 15, TimeUnit.MILLISECONDS);
         pool.scheduleAtFixedRate(this::connect, 0, 100, TimeUnit.MILLISECONDS);
