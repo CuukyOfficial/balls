@@ -2,8 +2,11 @@ package de.lama.balls;
 
 import de.lama.balls.surface.RectangularSurface;
 import de.lama.balls.surface.Surface;
+import de.lama.balls.ui.OptionsMenu;
+import de.lama.balls.ui.OptionsWindow;
 import de.lama.balls.ui.RenderedWindow;
 
+import javax.swing.*;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
@@ -25,13 +28,17 @@ public class BallLauncher {
 
         Surface surface = new RectangularSurface(this.configuration);
         RenderedWindow window = new RenderedWindow("Deez Nuts", this.configuration);
+        OptionsWindow optionsWindow = new OptionsWindow(this.configuration);
 
         ScheduledExecutorService pool = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
         surface.start(window, pool);
+
         pool.execute(() -> {
             window.start(surface);
             window.setVisible(true);
         });
+
+        pool.execute(() -> optionsWindow.setVisible(true));
     }
 
     private void saveConfig() throws FileNotFoundException {
