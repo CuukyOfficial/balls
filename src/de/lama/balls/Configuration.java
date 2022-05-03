@@ -10,11 +10,16 @@ public class Configuration {
     private float connectionDistance;
     private float ballSpeed;
     private float ballRadius;
+
     private RenderQuality renderQuality;
     private Color background;
     private Color circleColor;
 
     public Configuration() {
+
+    }
+
+    public Configuration(boolean standard) {
         this.ballAmount = 10;
         this.connectionDistance = 0.5f;
         this.ballSpeed = 0.005f;
