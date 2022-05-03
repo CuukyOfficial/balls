@@ -51,6 +51,7 @@
         </constraints>
         <properties>
           <maximum value="1000"/>
+          <minimum value="1"/>
         </properties>
       </component>
       <component id="d0e17" class="javax.swing.JSlider" binding="sliderBallRadius">
