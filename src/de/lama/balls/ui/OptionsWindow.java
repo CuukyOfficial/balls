@@ -1,12 +1,13 @@
 package de.lama.balls.ui;
 
+import de.lama.balls.BallLauncher;
 import de.lama.balls.Configuration;
 
 import javax.swing.*;
 
 public class OptionsWindow extends JFrame {
 
-    public OptionsWindow(Configuration configuration) {
+    public OptionsWindow(Configuration configuration, BallLauncher launcher) {
         super("Options");
 
         try {
@@ -15,7 +16,8 @@ public class OptionsWindow extends JFrame {
             e.printStackTrace();
         }
 
-        this.setContentPane(new OptionsMenu(configuration).getPanel1());
+        this.setLocation(800, 0);
+        this.setContentPane(new OptionsMenu(configuration, launcher).getPanel1());
         this.pack();
     }
 }

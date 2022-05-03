@@ -59,4 +59,16 @@ public enum RenderQuality {
     public Map<RenderingHints.Key, Object> getHints() {
         return this.hints == null ? this.hints = this.createHints() : this.hints;
     }
+
+    public int toIndex() {
+        for (int i = 0; i < values().length; i++) {
+            if (values()[i] == this)
+                return i;
+        }
+        return 0;
+    }
+
+    public static RenderQuality fromIndex(int i) {
+        return values()[i];
+    }
 }

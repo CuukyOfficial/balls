@@ -1,5 +1,6 @@
 package de.lama.balls.ui;
 
+import de.lama.balls.BallLauncher;
 import de.lama.balls.Configuration;
 
 import javax.swing.*;
@@ -7,6 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class OptionsMenu {
@@ -52,24 +54,28 @@ public class OptionsMenu {
     private JLabel lblRenderQuality;
     private JButton btnSave;
 
-    public OptionsMenu(Configuration configuration) {
+    public OptionsMenu(Configuration configuration, BallLauncher launcher) {
         this.configuration = configuration;
-        btnBackgroundColor.addActionListener(e -> this.openColorPicker(this.configuration.getBackground()));
-        btnBallColor.addActionListener(e -> this.openColorPicker(this.configuration.getCircleColor()));
+
+        this.sliderBallAmount.setValue(configuration.getBallAmount());
+        this.sliderBallAmount.addChangeListener(e -> this.configuration.setBallAmount(this.sliderBallAmount.getValue()));
+        btnBackgroundColor.addActionListener(e -> this.openColorPicker(this.configuration.getBackground(), configuration::setBackground));
+        btnBallColor.addActionListener(e -> this.openColorPicker(this.configuration.getCircleColor(), configuration::setCircleColor));
 
         OptionTransformer.CONNECTION_DISTANCE.doStuff(this.sliderConnectionDistance, configuration);
         OptionTransformer.BALL_SPEED.doStuff(this.sliderBallSpeed, configuration);
         OptionTransformer.BALL_SIZE.doStuff(this.sliderBallRadius, configuration);
 
-        btnSave.addActionListener(e -> {
-            // TODO: Save config
-        });
+        btnSave.addActionListener(e -> launcher.saveConfig());
+
+        this.sliderRenderQuality.setValue(configuration.getRenderQuality().toIndex());
+        this.sliderRenderQuality.addChangeListener(e -> this.configuration.setRenderQuality(RenderQuality.values()[this.sliderRenderQuality.getValue() - 1]));
     }
 
-    // TODO: Return color
-    private void openColorPicker(Color color) {
+    private void openColorPicker(Color color, Consumer<Color> setter) {
         JFrame frame = new JFrame("Pick color");
         JColorChooser colorChooser = new JColorChooser(color);
+        colorChooser.getSelectionModel().addChangeListener(e -> setter.accept(colorChooser.getColor()));
         frame.getContentPane().add(colorChooser);
         frame.pack();
         frame.setVisible(true);

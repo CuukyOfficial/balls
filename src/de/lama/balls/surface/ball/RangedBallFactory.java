@@ -1,5 +1,6 @@
 package de.lama.balls.surface.ball;
 
+import de.lama.balls.Configuration;
 import de.lama.balls.math.Vec2f;
 import de.lama.balls.ui.AspectRatioProvider;
 
@@ -12,23 +13,21 @@ public class RangedBallFactory implements BallFactory {
     private final Random random;
     private final float maxX;
     private final float maxY;
-    private final float speed;
-    private final float radius;
+    private final Configuration configuration;
     private final List<Ball> spawned;
     private final AspectRatioProvider aspectRatioProvider;
 
-    public RangedBallFactory(float maxX, float maxY, float speed, float radius, AspectRatioProvider aspectRatioProvider) {
+    public RangedBallFactory(float maxX, float maxY, Configuration configuration, AspectRatioProvider aspectRatioProvider) {
         this.random = new Random();
         this.maxX = maxX;
         this.maxY = maxY;
-        this.speed = speed;
-        this.radius = radius;
+        this.configuration = configuration;
         this.spawned = new ArrayList<>();
         this.aspectRatioProvider = aspectRatioProvider;
     }
 
     private float minmax(float max, float t) {
-        return Math.max(Math.min(max - this.radius, t), this.radius);
+        return Math.max(Math.min(max - this.configuration.getBallRadius(), t), this.configuration.getBallRadius());
     }
 
     private Vec2f randomLocation() {
@@ -41,14 +40,14 @@ public class RangedBallFactory implements BallFactory {
         float x = this.random.nextFloat() * 2 - 1;
         float y = this.random.nextFloat() * 2 - 1;
         Vec2f normalizedVector = new Vec2f(x, y).normalize();
-        return normalizedVector.scale(this.speed);
+        return normalizedVector.scale(this.configuration.getBallSpeed());
     }
 
     @Override
     public Ball create() {
         Vec2f velocity = this.randomVelocity();
         Vec2f location = this.randomLocation();
-        Ball spawn = new BouncingBall(location, velocity, this.radius, this.aspectRatioProvider);
+        Ball spawn = new BouncingBall(location, velocity, this.configuration, this.aspectRatioProvider);
         if (this.spawned.stream().anyMatch(spawned -> spawned.intersects(spawn)))
             return this.create();
         this.spawned.add(spawn);

@@ -28,7 +28,7 @@ public class BallLauncher {
 
         Surface surface = new RectangularSurface(this.configuration);
         RenderedWindow window = new RenderedWindow("Deez Nuts", this.configuration);
-        OptionsWindow optionsWindow = new OptionsWindow(this.configuration);
+        OptionsWindow optionsWindow = new OptionsWindow(this.configuration, this);
 
         ScheduledExecutorService pool = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
         surface.start(window, pool);
@@ -41,13 +41,6 @@ public class BallLauncher {
         pool.execute(() -> optionsWindow.setVisible(true));
     }
 
-    private void saveConfig() throws FileNotFoundException {
-        XMLEncoder encoder = new XMLEncoder(new FileOutputStream("./config.xml"));
-        encoder.writeObject(this.configuration == null ? new Configuration(true) : this.configuration);
-        encoder.flush();
-        encoder.close();
-    }
-
     private Configuration readConfig() throws FileNotFoundException {
         if (!new File("./config.xml").exists())
             this.saveConfig();
@@ -56,5 +49,17 @@ public class BallLauncher {
         if (config == null) this.saveConfig();
         decoder.close();
         return config == null ? null : (Configuration) config;
+    }
+
+    public void saveConfig() {
+        XMLEncoder encoder = null;
+        try {
+            encoder = new XMLEncoder(new FileOutputStream("./config.xml"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        encoder.writeObject(this.configuration == null ? new Configuration(true) : this.configuration);
+        encoder.flush();
+        encoder.close();
     }
 }

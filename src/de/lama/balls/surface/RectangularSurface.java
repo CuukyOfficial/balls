@@ -80,8 +80,7 @@ public class RectangularSurface implements Surface {
 
     @Override
     public void start(AspectRatioProvider aspectRatioProvider, ScheduledExecutorService pool) {
-        BallFactory ballFactory = new RangedBallFactory(1, 1, this.configuration.getBallSpeed(),
-            this.configuration.getBallRadius(), aspectRatioProvider);
+        BallFactory ballFactory = new RangedBallFactory(1, 1, this.configuration, aspectRatioProvider);
         IntStream.range(0, this.configuration.getBallAmount())
             .mapToObj(i -> ballFactory.create()).forEach(this.balls::add);
         pool.scheduleAtFixedRate(this::move, 0, 15, TimeUnit.MILLISECONDS);
