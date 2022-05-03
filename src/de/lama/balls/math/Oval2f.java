@@ -19,7 +19,7 @@ public record Oval2f(Vec2f location, Vec2f velocity, float width, float height) 
 //        float b = this.height;
 //        float p = oval.location.x();
 //        float q = oval.location.y();
-//        System.out.println(Math.pow(p / a, 2) + Math.pow(q / b, 2));
+////        System.out.println(Math.pow(p / a, 2) + Math.pow(q / b, 2));
 //        return Math.pow(p / a, 2) + Math.pow(q / b, 2) <= 4;
         Oval2f next = this.next();
         return next.asEllipse().contains(next.getMiddle(oval.next().location).asPoint());

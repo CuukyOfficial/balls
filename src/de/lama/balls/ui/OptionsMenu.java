@@ -4,6 +4,8 @@ import de.lama.balls.Configuration;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -48,6 +50,7 @@ public class OptionsMenu {
     private JButton btnBallColor;
     private JLabel lblBallColor;
     private JLabel lblRenderQuality;
+    private JButton btnSave;
 
     public OptionsMenu(Configuration configuration) {
         this.configuration = configuration;
@@ -57,8 +60,13 @@ public class OptionsMenu {
         OptionTransformer.CONNECTION_DISTANCE.doStuff(this.sliderConnectionDistance, configuration);
         OptionTransformer.BALL_SPEED.doStuff(this.sliderBallSpeed, configuration);
         OptionTransformer.BALL_SIZE.doStuff(this.sliderBallRadius, configuration);
+
+        btnSave.addActionListener(e -> {
+            // TODO: Save config
+        });
     }
 
+    // TODO: Return color
     private void openColorPicker(Color color) {
         JFrame frame = new JFrame("Pick color");
         JColorChooser colorChooser = new JColorChooser(color);
