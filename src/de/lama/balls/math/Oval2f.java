@@ -25,7 +25,7 @@ public record Oval2f(Vec2f location, Vec2f velocity, float width, float height) 
         return next.asEllipse().contains(next.getMiddle(oval.next().location).asPoint());
     }
 
-    public Vec2f bounce(Oval2f oval, float speed) {
+    public Vec2f bounce(Oval2f oval) {
         Vec2f n = this.location.sub(oval.location).normalize();
         return this.velocity.sub(n.scale(n.dotProduct(this.velocity.sub(oval.velocity))));
     }

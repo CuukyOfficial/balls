@@ -11,10 +11,6 @@ import java.awt.*;
 
 public class RenderedLabel extends JLabel implements AspectRatioProvider {
 
-    private static final RenderQuality RENDER_QUALITY = RenderQuality.HIGH;
-    private static final Color BACKGROUND = Color.BLACK;
-    private static final Color CIRCLE_COLOR = Color.RED;
-
     private final ConfigurationProvider configurationProvider;
     private Surface surface;
 
@@ -38,7 +34,7 @@ public class RenderedLabel extends JLabel implements AspectRatioProvider {
     @Override
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHints(RENDER_QUALITY.getHints());
+        g2d.setRenderingHints(this.configurationProvider.get().renderQuality().getHints());
         g2d.setColor(this.configurationProvider.get().background());
         g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 

@@ -1,5 +1,6 @@
 package de.lama.balls.surface;
 
+import de.lama.balls.ConfigurationProvider;
 import de.lama.balls.math.Vec2f;
 import de.lama.balls.surface.ball.Ball;
 import de.lama.balls.surface.ball.BallFactory;
@@ -18,17 +19,14 @@ import java.util.stream.IntStream;
 
 public class RectangularSurface implements Surface {
 
-    private static final int MAX_BALLS = 1;
-    private static final float CONNECTION_DISTANCE = 1f;
-    private static final float BALL_SPEED = 0.005f;
-    private static final float BALL_RADIUS = 0.2f;
-
     private final List<Ball> balls;
     private final List<Connection> connections;
+    private final ConfigurationProvider configurationProvider;
 
-    public RectangularSurface() {
+    public RectangularSurface(ConfigurationProvider configurationProvider) {
         this.balls = new CopyOnWriteArrayList<>();
         this.connections = new CopyOnWriteArrayList<>();
+        this.configurationProvider = configurationProvider;
     }
 
     private void move() {
@@ -39,13 +37,14 @@ public class RectangularSurface implements Surface {
 
     private void connect() {
         List<Connection> connections = new ArrayList<>(this.connections);
+        float minDistance = this.configurationProvider.get().connectionDistance();
         for (Ball ball1 : this.balls) {
             for (Ball ball2 : this.balls) {
                 if (ball1 == ball2) continue;
 
                 float distance = ball1.getLocation().distance(ball2.getLocation());
-                if (distance <= CONNECTION_DISTANCE) {
-                    this.connections.add(new BallConnection(ball1, ball2, 1f - distance / CONNECTION_DISTANCE));
+                if (distance <= minDistance) {
+                    this.connections.add(new BallConnection(ball1, ball2, 1f - distance / minDistance));
                 }
             }
         }
@@ -65,7 +64,7 @@ public class RectangularSurface implements Surface {
             Vec2f bounce = null;
             for (Ball ball2 : this.balls) {
                 if (!ball1.equals(ball2) && ball1.intersects(ball2)) {
-                    Vec2f v1 = ball1.asOval().bounce(ball2.asOval(), BALL_SPEED);
+                    Vec2f v1 = ball1.asOval().bounce(ball2.asOval());
                     bounce = bounce != null ? bounce.add(v1) : v1;
                 }
             }
@@ -74,15 +73,17 @@ public class RectangularSurface implements Surface {
 
         this.balls.stream().filter(b -> !velocitiesOfCollisions.containsKey(b))
             .forEach(b -> velocitiesOfCollisions.put(b, b.getVelocity()));
-        float max = MAX_BALLS * BALL_SPEED;
+        float max = this.configurationProvider.get().ballAmount() * this.configurationProvider.get().ballSpeed();
         float allSpeeds = velocitiesOfCollisions.values().stream().map(Vec2f::norm).reduce(Float::sum).orElse(max);
         velocitiesOfCollisions.keySet().forEach(b -> b.setVelocity(velocitiesOfCollisions.get(b).scale(max / allSpeeds)));
     }
 
     @Override
     public void start(AspectRatioProvider aspectRatioProvider, ScheduledExecutorService pool) {
-        BallFactory ballFactory = new RangedBallFactory(1, 1, BALL_SPEED, BALL_RADIUS, aspectRatioProvider);
-        IntStream.range(0, MAX_BALLS).mapToObj(i -> ballFactory.create()).forEach(this.balls::add);
+        BallFactory ballFactory = new RangedBallFactory(1, 1, this.configurationProvider.get().ballSpeed(),
+            this.configurationProvider.get().ballRadius(), aspectRatioProvider);
+        IntStream.range(0, this.configurationProvider.get().ballAmount())
+            .mapToObj(i -> ballFactory.create()).forEach(this.balls::add);
         pool.scheduleAtFixedRate(this::move, 0, 15, TimeUnit.MILLISECONDS);
         pool.scheduleAtFixedRate(this::connect, 0, 100, TimeUnit.MILLISECONDS);
     }
