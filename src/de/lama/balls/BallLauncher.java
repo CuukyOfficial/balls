@@ -23,8 +23,6 @@ public class BallLauncher {
             e.printStackTrace();
         }
 
-
-
         Surface surface = new RectangularSurface(this.configuration);
         RenderedWindow window = new RenderedWindow("Deez Nuts", this.configuration);
 

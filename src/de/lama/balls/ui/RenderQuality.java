@@ -21,7 +21,7 @@ public enum RenderQuality {
             return hints;
         }
     },
-    MEDIUM{
+    MEDIUM {
         @Override
         Map<RenderingHints.Key, Object> createHints() {
             Map<RenderingHints.Key, Object> hints = new HashMap<>();

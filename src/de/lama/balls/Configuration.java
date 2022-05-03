@@ -15,9 +15,7 @@ public class Configuration {
     private Color background;
     private Color circleColor;
 
-    public Configuration() {
-
-    }
+    public Configuration() {}
 
     public Configuration(boolean standard) {
         this.ballAmount = 10;
