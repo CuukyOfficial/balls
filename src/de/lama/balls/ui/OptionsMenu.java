@@ -69,7 +69,7 @@ public class OptionsMenu {
         btnSave.addActionListener(e -> launcher.saveConfig());
 
         this.sliderRenderQuality.setValue(configuration.getRenderQuality().toIndex());
-        this.sliderRenderQuality.addChangeListener(e -> this.configuration.setRenderQuality(RenderQuality.values()[this.sliderRenderQuality.getValue() - 1]));
+        this.sliderRenderQuality.addChangeListener(e -> this.configuration.setRenderQuality(RenderQuality.fromIndex(this.sliderRenderQuality.getValue() - 1)));
     }
 
     private void openColorPicker(Color color, Consumer<Color> setter) {
