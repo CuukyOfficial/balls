@@ -2,14 +2,15 @@ package de.lama.balls;
 
 import de.lama.balls.surface.RectangularSurface;
 import de.lama.balls.surface.Surface;
-import de.lama.balls.ui.OptionsMenu;
 import de.lama.balls.ui.OptionsWindow;
 import de.lama.balls.ui.RenderedWindow;
 
-import javax.swing.*;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 

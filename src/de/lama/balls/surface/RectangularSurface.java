@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -20,36 +21,37 @@ import java.util.stream.IntStream;
 public class RectangularSurface implements Surface {
 
     private final List<Ball> balls;
-    private final List<Connection> connections;
+    private final Map<Ball, List<BallConnection>> connections;
     private final Configuration configuration;
+    private final List<Runnable> updateListener;
 
     public RectangularSurface(Configuration configuration) {
         this.balls = new CopyOnWriteArrayList<>();
-        this.connections = new CopyOnWriteArrayList<>();
+        this.connections = new ConcurrentHashMap<>();
         this.configuration = configuration;
+        this.updateListener = new ArrayList<>();
     }
 
     private void move() {
         this.checkBallCollision();
         this.balls.forEach(this::checkBoundaries);
         this.balls.forEach(Ball::move);
+        this.updateListener.forEach(Runnable::run);
     }
 
     private void connect() {
-        List<Connection> connections = new ArrayList<>(this.connections);
         float minDistance = this.configuration.getConnectionDistance();
         for (Ball ball1 : this.balls) {
+            this.connections.put(ball1, new ArrayList<>());
             for (Ball ball2 : this.balls) {
                 if (ball1 == ball2) continue;
-
                 float distance = ball1.getLocation().distance(ball2.getLocation());
                 if (distance <= minDistance) {
-                    this.connections.add(new BallConnection(ball1, ball2, 1f - distance / minDistance));
+                    float density = 1f - distance / minDistance;
+                    this.connections.get(ball1).add(new BallConnection(ball2, density));
                 }
             }
         }
-
-        this.connections.removeAll(connections);
     }
 
     private void checkBoundaries(Ball ball) {
@@ -83,8 +85,13 @@ public class RectangularSurface implements Surface {
         BallFactory ballFactory = new RangedBallFactory(1, 1, this.configuration, aspectRatioProvider);
         IntStream.range(0, this.configuration.getBallAmount())
             .mapToObj(i -> ballFactory.create()).forEach(this.balls::add);
-        pool.scheduleAtFixedRate(this::move, 0, 15, TimeUnit.MILLISECONDS);
+        pool.scheduleAtFixedRate(this::move, 0, 10, TimeUnit.MILLISECONDS);
         pool.scheduleAtFixedRate(this::connect, 0, 100, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void addLocationUpdateListener(Runnable runnable) {
+        this.updateListener.add(runnable);
     }
 
     @Override
@@ -93,7 +100,7 @@ public class RectangularSurface implements Surface {
     }
 
     @Override
-    public List<Connection> getConnections() {
-        return new ArrayList<>(this.connections);
+    public Map<Ball, List<BallConnection>> getConnections() {
+        return new HashMap<>(this.connections);
     }
 }

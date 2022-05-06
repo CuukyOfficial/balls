@@ -1,66 +1,63 @@
 package de.lama.balls.ui;
 
 import de.lama.balls.Configuration;
-import de.lama.balls.math.Vec2f;
-import de.lama.balls.surface.Connection;
 import de.lama.balls.surface.Surface;
-import de.lama.balls.surface.ball.Ball;
+import de.lama.balls.ui.objects.RenderObject;
+import de.lama.balls.ui.objects.RenderedCircle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RenderedLabel extends JLabel implements AspectRatioProvider {
 
     private final Configuration configuration;
+    private final List<RenderObject> renderObjects;
     private Surface surface;
+
+    private boolean updateQueued;
+    private long lastUpdate;
+    private long approximateNextUpdate;
 
     RenderedLabel(Configuration configuration) {
         this.configuration = configuration;
+        this.renderObjects = new ArrayList<>();
+        this.lastUpdate = System.currentTimeMillis();
+        this.approximateNextUpdate = 10;
     }
 
-    private int transformX(float x) {
-        return (int) (this.getWidth() * x);
-    }
-
-    private int transformY(float y) {
-        return (int) (this.getHeight() * y);
+    private void onLocationUpdate() {
+        long current = System.currentTimeMillis();
+        this.approximateNextUpdate = current + (current - this.lastUpdate);
+        this.lastUpdate = current;
+        this.updateQueued = true;
     }
 
     public void start(Surface surface) {
         this.surface = surface;
+        surface.addLocationUpdateListener(this::onLocationUpdate);
+        this.renderObjects.add(new RenderedCircle(this.surface, this.configuration));
         this.repaint();
     }
 
     @Override
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHints(this.configuration.getRenderQuality().getHints());
         g2d.setColor(this.configuration.getBackground());
         g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-        Color circleColor = this.configuration.getCircleColor();
-        float r = circleColor.getRed() / 255f;
-        float gr = circleColor.getGreen() / 255f;
-        float b = circleColor.getBlue() / 255f;
-        for (Connection connection : this.surface.getConnections()) {
-            g2d.setColor(new Color(r, gr, b, connection.getDensity()));
-            int x1 = this.transformX(connection.getPoint1().x());
-            int x2 = this.transformX(connection.getPoint2().x());
-            int y1 = this.transformY(connection.getPoint1().y());
-            int y2 = this.transformY(connection.getPoint2().y());
-            g2d.drawLine(x1, y1, x2, y2);
-        }
-
-        g2d.setColor(this.configuration.getCircleColor());
-        for (Ball ball : this.surface.getBalls()) {
-            Vec2f loc = ball.getLocation();
-            int x = this.transformX(loc.x() - ball.getWidth());
-            int y = this.transformY(loc.y() - ball.getHeight());
-            int width = this.transformX(ball.getWidth() * 2);
-            int height = this.transformY(ball.getHeight() * 2);
-            g2d.fillOval(x, y, width, height);
-            g2d.drawOval(x, y, width, height);
-        }
+        g2d.setRenderingHints(this.configuration.getRenderQuality().getHints());
+//        if (this.updateQueued) {
+            this.renderObjects.forEach(render -> render.draw(g2d));
+//            this.updateQueued = false;
+//        } else {
+//            long timeUntilNextUpdate = this.approximateNextUpdate - this.lastUpdate;
+//            long timePassed = System.currentTimeMillis() - this.lastUpdate;
+//            float scale = (float) timePassed / timeUntilNextUpdate;
+//            System.out.println("INTERPOLATE: " + scale);
+//            this.renderObjects.forEach(render -> render.interpolate(g2d, scale));
+//        }
 
         this.repaint();
     }
