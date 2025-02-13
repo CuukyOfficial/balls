@@ -1,5 +1,2 @@
 # balls
-Big balls sheesh
-
-Just another project.
-Laura sucks
+Shows big red balls on your screen as a nice screensaver :)
